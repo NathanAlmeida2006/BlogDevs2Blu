@@ -1,65 +1,48 @@
 package com.api.blogAppApi.controllers;
 
-import com.api.blogAppApi.converters.BlogAppPostConverter;
-import com.api.blogAppApi.dtos.BlogAppRecordDTO;
+import com.api.blogAppApi.dtos.impls.PostDTO;
 import com.api.blogAppApi.models.BlogAppPostModel;
 import com.api.blogAppApi.services.BlogAppPostService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/blog")
+@RequestMapping("/posts")
 public class BlogAppPostController {
 
-    private final BlogAppPostService blogAppPostService;
-    private final BlogAppPostConverter converter;
+    private final BlogAppPostService service;
+    private final PostConverter converter;
 
-    @Autowired
-    public BlogAppPostController(BlogAppPostService blogAppPostService, BlogAppPostConverter converter) {
-        this.blogAppPostService = blogAppPostService;
+    public BlogAppPostController(BlogAppPostService service, PostConverter converter) {
+        this.service = service;
         this.converter = converter;
     }
 
-    // Endpoint para adicionar um novo post
     @PostMapping
-    public ResponseEntity<BlogAppPostModel> addBlogAppPost(@RequestBody BlogAppRecordDTO blogAppRecordDTO) {
-        BlogAppPostModel post = converter.toModel(blogAppRecordDTO);
-        BlogAppPostModel savedPost = blogAppPostService.addBlogAppPost(post);
-        return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
+    public ResponseEntity<BlogAppPostModel> criarPost(@RequestBody PostDTO dto) {
+        BlogAppPostModel post = converter.toModel(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvarPost(post));
     }
 
-    // Endpoint para listar todos os posts
     @GetMapping
-    public ResponseEntity<List<BlogAppPostModel>> getAllBlogAppPosts() {
-        List<BlogAppPostModel> posts = blogAppPostService.getAllBlogAppPosts();
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    public ResponseEntity<List<BlogAppPostModel>> listarPosts() {
+        return ResponseEntity.ok(service.listarTodosPosts());
     }
 
-    // Endpoint para buscar um post por ID
     @GetMapping("/{id}")
-    public ResponseEntity<BlogAppPostModel> getBlogAppPostById(@PathVariable UUID id) {
-        return blogAppPostService.getBlogAppPostById(id)
-                .map(post -> new ResponseEntity<>(post, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<BlogAppPostModel> buscarPost(@PathVariable UUID id) {
+        Optional<BlogAppPostModel> post = service.buscarPostPorId(id);
+        return post.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Endpoint para atualizar um post existente
-    @PutMapping("/{id}")
-    public ResponseEntity<BlogAppPostModel> updateBlogAppPost(@PathVariable UUID id, @RequestBody BlogAppRecordDTO blogAppRecordDTO) {
-        BlogAppPostModel post = converter.toModel(blogAppRecordDTO);
-        BlogAppPostModel updatedPost = blogAppPostService.updateBlogAppPost(id, post);
-        return updatedPost != null ? new ResponseEntity<>(updatedPost, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    // Endpoint para deletar um post por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBlogAppPost(@PathVariable UUID id) {
-        blogAppPostService.deleteBlogAppPost(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> excluirPost(@PathVariable UUID id) {
+        service.excluirPost(id);
+        return ResponseEntity.noContent().build();
     }
 }

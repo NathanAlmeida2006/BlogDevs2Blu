@@ -26,7 +26,6 @@ public class DataUtils {
         // Criando primeiro post
         BlogAppPostModel post1 = new BlogAppPostModel();
         post1.setAutor("Pokemon");
-        post1.setData(LocalDate.now().atStartOfDay());
         post1.setTitulo("Docker");
         post1.setTexto(
                 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +
@@ -41,7 +40,6 @@ public class DataUtils {
         // Criando segundo post
         BlogAppPostModel post2 = new BlogAppPostModel();
         post2.setAutor("Ben10");
-        post2.setData(LocalDate.now().atStartOfDay());
         post2.setTitulo("API REST");
         post2.setTexto(
                 "Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +

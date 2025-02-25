@@ -7,13 +7,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BlogAppPostService {
-    BlogAppPostModel addBlogAppPost(BlogAppPostModel post);
+    BlogAppPostModel salvarPost(BlogAppPostModel post);
 
-    List<BlogAppPostModel> getAllBlogAppPosts();
+    List<BlogAppPostModel> listarTodosPosts();
 
-    Optional<BlogAppPostModel> getBlogAppPostById(UUID id);
+    Optional<BlogAppPostModel> buscarPostPorId(UUID id);
 
-    BlogAppPostModel updateBlogAppPost(UUID id, BlogAppPostModel post);
-
-    void deleteBlogAppPost(UUID id);
+    void excluirPost(UUID id);
 }
